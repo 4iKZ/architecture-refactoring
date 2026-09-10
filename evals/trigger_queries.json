@@ -1,0 +1,126 @@
+{
+  "skill_name": "architecture-refactoring",
+  "notes": "20 trigger queries with a fixed train/validation split. Evaluate trigger rates with run_trigger_eval.py; only change the description based on train failures, and select the final description by validation pass rate.",
+  "queries": [
+    {
+      "id": 1,
+      "split": "train",
+      "should_trigger": true,
+      "query": "Our billing and order code is a total mess — every time we add a payment method we end up touching like six files across three modules. Can you look at the repo and tell me how to untangle it? Don't start coding yet, I want a plan."
+    },
+    {
+      "id": 2,
+      "split": "train",
+      "should_trigger": true,
+      "query": "why does everything in this project depend on everything?? i fix one bug and break 3 tests somewhere completely unrelated"
+    },
+    {
+      "id": 3,
+      "split": "train",
+      "should_trigger": true,
+      "query": "The account module has grown into 4000 lines and nobody dares to change it anymore. I want to split it so future changes are safer, without breaking behavior."
+    },
+    {
+      "id": 4,
+      "split": "train",
+      "should_trigger": true,
+      "query": "We have three services writing to the same database table and the business invariants keep drifting apart. Help me figure out who should own that data."
+    },
+    {
+      "id": 5,
+      "split": "train",
+      "should_trigger": true,
+      "query": "Can you analyze the architecture of src/ and identify circular dependencies and cross-layer imports? Just a report for now, no code changes."
+    },
+    {
+      "id": 6,
+      "split": "train",
+      "should_trigger": true,
+      "query": "This monolith is driving me crazy — I want to move to microservices eventually. What's the right migration path so we don't end up with a distributed mess?"
+    },
+    {
+      "id": 7,
+      "split": "validation",
+      "should_trigger": true,
+      "query": "I keep meaning to clean up the codebase but never know where to start. Where would we get the most value with the least risk?"
+    },
+    {
+      "id": 8,
+      "split": "validation",
+      "should_trigger": true,
+      "query": "Refactor our notification subsystem so we can swap the email provider without touching the business rules. Everything works today, behavior must stay exactly the same."
+    },
+    {
+      "id": 9,
+      "split": "validation",
+      "should_trigger": true,
+      "query": "Our tests need an entire database and redis just to test the pricing logic. Can you restructure this so the domain logic is testable on its own? No rush, I'd rather do it right."
+    },
+    {
+      "id": 10,
+      "split": "validation",
+      "should_trigger": true,
+      "query": "set up a CI check that blocks controller -> repository imports and fails the build when a new cross-module dependency cycle appears"
+    },
+    {
+      "id": 11,
+      "split": "train",
+      "should_trigger": false,
+      "query": "Fix the bug in checkout where the total is wrong when a coupon is applied — the discount should be subtracted before tax."
+    },
+    {
+      "id": 12,
+      "split": "train",
+      "should_trigger": false,
+      "query": "Write unit tests for the billing module, the coverage is terrible."
+    },
+    {
+      "id": 13,
+      "split": "train",
+      "should_trigger": false,
+      "query": "Make the code style consistent — run prettier and clean up the eslint warnings in src/."
+    },
+    {
+      "id": 14,
+      "split": "train",
+      "should_trigger": false,
+      "query": "Review this PR before I merge it, I'm worried about edge cases in the new endpoint."
+    },
+    {
+      "id": 15,
+      "split": "train",
+      "should_trigger": false,
+      "query": "My build takes 4 minutes. Profile it and tell me what to speed up."
+    },
+    {
+      "id": 16,
+      "split": "train",
+      "should_trigger": false,
+      "query": "Upgrade React 17 to 18 across the app and fix whatever breaks."
+    },
+    {
+      "id": 17,
+      "split": "validation",
+      "should_trigger": false,
+      "query": "Rename the `user` module to `account` everywhere, including imports and tests."
+    },
+    {
+      "id": 18,
+      "split": "validation",
+      "should_trigger": false,
+      "query": "Set up a new Next.js project with a clean domain-driven folder structure from day one."
+    },
+    {
+      "id": 19,
+      "split": "validation",
+      "should_trigger": false,
+      "query": "Document the current architecture — I need a diagram and a short wiki page for onboarding new devs."
+    },
+    {
+      "id": 20,
+      "split": "validation",
+      "should_trigger": false,
+      "query": "Add feature flags around the pricing service so we can A/B test different discount rules."
+    }
+  ]
+}

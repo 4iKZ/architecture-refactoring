@@ -1,0 +1,9 @@
+# Eval run artifacts
+evals/workspace/
+
+# Fixture-local git repositories created by setup_history.py
+evals/fixtures/*/.git/
+
+# Python
+__pycache__/
+*.pyc

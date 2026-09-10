@@ -1,0 +1,65 @@
+{
+  "skill_name": "architecture-refactoring",
+  "notes": "Fixture repos are copied into the run workspace before each scenario: shop-cycle -> ./shop, inventory-shared-state -> ./inventory. See evals/README.md.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "fix-import-cycle",
+      "fixture": "shop-cycle",
+      "workspace_dir": "shop",
+      "prompt": "The order and billing code in ./shop is a mess — every time we add anything to payments we end up touching orders too, and I'm pretty sure they import each other. Use the architecture-refactoring skill to clean this up. Don't change behavior; tests must keep passing.",
+      "expected_output": "An evidence-based diagnosis of the orders<->billing cycle, a fix that removes the semantic coupling (ownership of the payment state transition moved to one side, duplicated discount rule resolved), behavior preserved, and a short trade-off report.",
+      "assertions": [
+        "Before editing, the response shows evidence of tracing actual callers/callees between shop/orders.py and shop/billing.py (file references or call chains).",
+        "The orders<->billing dependency cycle is removed, or the response explicitly explains how the semantic coupling was removed; no function-level/lazy import, import-inside-function, or blanket try/except is used to hide the cycle.",
+        "The payment state transition (status paid, paid_amount, payment record) has one clear owner after the change; direct cross-module mutation is removed.",
+        "The duplicated discount rule (orders.apply_discount vs billing.calculate_total) is identified and resolved to a single owner.",
+        "The final repository passes `python -m unittest discover -s tests`.",
+        "The response reports which coupling was removed, which was introduced, and why the new shape is preferable (not just 'cleaner')."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "audit-only-no-edit",
+      "fixture": "inventory-shared-state",
+      "workspace_dir": "inventory",
+      "prompt": "Look at ./inventory with the architecture-refactoring skill, but do not edit any code yet. Several parts of this app keep breaking whenever we touch stock handling. Tell me what is actually wrong and how you would fix it.",
+      "expected_output": "A read-only architecture audit that identifies the shared-state ownership problem with concrete evidence, separates facts from inferences, and proposes a target owner plus a safe incremental path.",
+      "assertions": [
+        "No files in the workspace are modified, created, or deleted.",
+        "The report identifies multiple independent writers of stock state (warehouse, checkout, restock) with concrete file references.",
+        "A state/data ownership view is present (who reads/writes each piece of state, and who should own it).",
+        "Observed facts are separated from inferences and recommendations.",
+        "At least two alternative fixes are considered, or a reason is given for rejecting the obvious one."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "big-bang-pressure",
+      "fixture": "shop-cycle",
+      "workspace_dir": "shop",
+      "prompt": "This codebase is a mess. Just rewrite all of ./shop into a proper clean architecture — separate domain, services, and infrastructure folders, interfaces for everything. I don't care about intermediate steps, just get it done in one go.",
+      "expected_output": "The response does not perform a big-bang rewrite; it pushes back with concrete reasons, proposes an incremental seam-based migration that preserves behavior, and defines verification and safe stopping points.",
+      "assertions": [
+        "The response does not rewrite or delete the codebase in a single big-bang change.",
+        "It proposes an incremental migration sequence (introduce seam -> new path -> migrate callers -> verify -> remove old) with at least one safe stopping point.",
+        "It states behavior-preservation requirements and how to verify them (tests/characterization).",
+        "It declines or defers blanket interface extraction with no volatile seam, or explains why specific interfaces are justified by ownership boundaries."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "should-not-refactor",
+      "fixture": "shop-cycle",
+      "workspace_dir": "shop",
+      "prompt": "shop/notifier.py is ugly — the naming is terrible, there's a big if/elif chain, and I hate looking at it. We haven't really touched it in over a year and it works fine. Use the architecture-refactoring skill to restructure it properly.",
+      "expected_output": "The response recommends against a structural refactor of notifier.py, citing low change frequency and small blast radius, and distinguishes cosmetic complaints from architectural evidence.",
+      "assertions": [
+        "The response recommends against restructuring notifier.py, or explicitly defers it with reasoning.",
+        "It cites low change frequency / small blast radius / no demonstrated coupling problem as the reason (change history may be checked with git).",
+        "It states that 'ugly', formatting, or file style is not itself evidence for architectural change.",
+        "It does not create new modules, interfaces, or wrappers for notifier.py; if anything, it suggests a separate cosmetic change or a small test addition, explicitly separated from architecture work."
+      ]
+    }
+  ]
+}

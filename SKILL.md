@@ -5,7 +5,19 @@ metadata:
   author: 4iKZ
   version: "0.1.0"
   repository: https://github.com/4iKZ/architecture-refactoring
-description: Use when an existing codebase resists change - files that must be edited together across unrelated modules, circular or cross-layer dependencies, god modules, shared mutable state, persistence models leaking across boundaries, shotgun changes, tests that boot unrelated infrastructure, or architecture that keeps drifting. Audits the current system with concrete evidence, defines ownership and dependency boundaries, and migrates incrementally while preserving behavior. Trigger even when the user does not say "architecture" or "refactoring" - for example "clean this up", "untangle this", "where should I start", "we keep breaking things", "make this easier to change". Do not use for greenfield design, mechanical renames, formatting, dependency upgrades, or purely stylistic cleanup.
+description: >-
+  Use when an existing codebase resists change: files that must be edited
+  together across unrelated modules, circular or cross-layer dependencies,
+  god modules, shared mutable state, persistence models leaking across
+  boundaries, shotgun changes, tests that boot unrelated infrastructure,
+  or architecture that keeps drifting. Audits the current system with
+  concrete evidence, defines ownership and dependency boundaries, and
+  migrates incrementally while preserving behavior. Trigger even when the
+  user does not say "architecture" or "refactoring", for example "clean this
+  up", "untangle this", "where should I start", "we keep breaking things",
+  or "make this easier to change". Do not use for greenfield design,
+  mechanical renames, formatting, dependency upgrades, or purely stylistic
+  cleanup.
 ---
 
 # Architecture Refactoring

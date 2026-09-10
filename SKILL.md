@@ -3,7 +3,7 @@ name: architecture-refactoring
 license: Apache-2.0
 metadata:
   author: 4iKZ
-  version: "0.1.0"
+  version: "0.1.1"
   repository: https://github.com/4iKZ/architecture-refactoring
 description: >-
   Use when an existing codebase resists change: files that must be edited

@@ -176,9 +176,9 @@ python evals/run_scenario_eval.py --scenario 1 --workspace <ws> \
 # Repository-specific validation (requires PyYAML)
 python evals/validate_skill.py .
 
-# Official Agent Skills reference validator (optional)
+# Official Agent Skills reference validator (optional; run from the repo root)
 python -m pip install "git+https://github.com/agentskills/agentskills.git#subdirectory=skills-ref"
-skills-ref validate .
+skills-ref validate "$PWD"
 ```
 
 Skill discovery is host-dependent. If your agent does not auto-invoke skills,

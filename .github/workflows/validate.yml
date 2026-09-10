@@ -42,4 +42,4 @@ jobs:
         run: python -m pip install "git+https://github.com/agentskills/agentskills.git#subdirectory=skills-ref"
 
       - name: Official Agent Skills validation (reference tool, non-blocking)
-        run: skills-ref validate .
+        run: skills-ref validate "$PWD"

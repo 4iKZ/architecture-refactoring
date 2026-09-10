@@ -151,9 +151,9 @@ python evals/run_scenario_eval.py --scenario 1 --workspace <ws> \
 # 仓库自检（需要 PyYAML）
 python evals/validate_skill.py .
 
-# 官方 Agent Skills 参考校验器（可选）
+# 官方 Agent Skills 参考校验器（可选；在仓库根目录运行）
 python -m pip install "git+https://github.com/agentskills/agentskills.git#subdirectory=skills-ref"
-skills-ref validate .
+skills-ref validate "$PWD"
 ```
 
 技能的自动发现依赖宿主 Agent。如果你的 Agent 不会自动调用 skill，请显式点名：

@@ -39,12 +39,41 @@ The hero image distills the full [SKILL.md](SKILL.md) workflow into four moves:
    ownership, public contract, and allowed/forbidden dependencies.
 3. **Refactor incrementally** — introduce a seam, migrate one caller, verify,
    then migrate the rest; never a big-bang rewrite.
-4. **Verify behavior and architecture separately** — tests prove behavior;
-   dependency direction, ownership, and blast radius prove the architecture.
+4. **Verify behavior and architecture separately** — tests provide evidence that
+   behavior is preserved; dependency direction, ownership, and blast radius
+   provide evidence that the architecture improved.
 
-The skill loads when it is relevant and enforces evidence over pattern
-compliance, including explicit stop conditions and a list of common
-refactoring anti-patterns.
+On hosts that support proactive Agent Skill discovery, the description is
+designed to trigger on both explicit architecture requests and symptom-style
+ones. Discovery remains host- and model-dependent; when the host exposes the
+skill, naming it explicitly ("use the architecture-refactoring skill") always
+works. The skill enforces evidence over pattern compliance, including explicit
+stop conditions and a list of common refactoring anti-patterns.
+
+## What changes when the skill is used?
+
+A generic "apply Clean Architecture" prompt tends to produce a prettier tree:
+
+```text
+src/
+├── domain/
+├── services/
+├── repositories/
+├── interfaces/
+└── adapters/
+```
+
+This skill asks instead for the smallest change that reduces future coupling:
+
+1. Trace who changes together.
+2. Identify split ownership.
+3. Show concrete dependency evidence.
+4. Propose the smallest boundary change.
+5. Migrate one caller.
+6. Re-run behavioral and structural checks.
+
+The goal is not a prettier directory tree. The goal is a smaller future change
+surface.
 
 ## What's inside
 
@@ -71,7 +100,7 @@ The skill is a folder with a `SKILL.md`; any agent that supports the
 **Claude Code** (user-level):
 
 ```bash
-git clone https://github.com/4iKZ/architecture-refactoring-skill \
+git clone https://github.com/4iKZ/architecture-refactoring \
   ~/.claude/skills/architecture-refactoring
 ```
 
@@ -81,14 +110,14 @@ For a per-project install, use `.claude/skills/architecture-refactoring/`.
 **OpenCode**:
 
 ```bash
-git clone https://github.com/4iKZ/architecture-refactoring-skill \
+git clone https://github.com/4iKZ/architecture-refactoring \
   ~/.config/opencode/skills/architecture-refactoring
 ```
 
 **Codex and other cross-client agents**:
 
 ```bash
-git clone https://github.com/4iKZ/architecture-refactoring-skill \
+git clone https://github.com/4iKZ/architecture-refactoring \
   ~/.agents/skills/architecture-refactoring
 ```
 
@@ -123,9 +152,9 @@ Limit analysis to this module and its dependency neighborhood unless you find
 evidence that the problem is systemic.
 ```
 
-The skill also triggers on symptoms without the word "architecture" — "why does
-everything depend on everything", "I fix one bug and break three tests",
-"where should we start cleaning up".
+The description is also designed to match symptom-style requests that never say
+"architecture" — "why does everything depend on everything", "I fix one bug and
+break three tests", "where should we start cleaning up".
 
 **Do not use it for**: greenfield design, mechanical renames, formatting,
 dependency upgrades, or purely stylistic cleanup. Those are separate changes.
@@ -138,14 +167,18 @@ and a 20-query trigger set with a fixed train/validation split.
 
 ```bash
 # Trigger evals (requires the claude CLI; install the skill into the workspace first)
-python evals/run_trigger_eval.py --workspace <workspace> --output results.json
+python evals/run_trigger_eval.py --workspace <workspace> --output results.json --runs 3
 
 # One output scenario
 python evals/run_scenario_eval.py --scenario 1 --workspace <ws> \
   --with-skill . --out <run-dir>
 
-# Specification compliance check
-python evals/validate_skill.py
+# Repository-specific validation (requires PyYAML)
+python evals/validate_skill.py .
+
+# Official Agent Skills reference validator (optional)
+python -m pip install "git+https://github.com/agentskills/agentskills.git#subdirectory=skills-ref"
+skills-ref validate .
 ```
 
 Skill discovery is host-dependent. If your agent does not auto-invoke skills,

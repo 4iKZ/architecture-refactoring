@@ -76,9 +76,10 @@ def checkout(order_id):
     order = get_order(order_id)
     if order["status"] != "new":
         raise ValueError("order not open")
-    result = billing.charge(order_id, apply_discount(order["total"]))
+    amount = apply_discount(order["total"])
+    result = billing.charge(order_id, amount)
     if result["ok"]:
-        mark_paid(order_id, apply_discount(order["total"]))
+        mark_paid(order_id, amount)
         notifier.send_confirmation(order)
     return result
 ```

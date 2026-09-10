@@ -29,9 +29,33 @@
 1. **先审计** —— 提案之前，先理解现状：依赖、数据流、变更热点。
 2. **定义边界** —— 识别内聚模块、显式契约与明确归属；每个边界必须回答：职责、不变量、数据归属、公开契约、允许/禁止的依赖方向。
 3. **增量重构** —— 引入接缝、迁移一个调用方、验证、再迁移其余；绝不大爆炸重写。
-4. **行为与架构分开验证** —— 测试证明行为未变；依赖方向、归属关系与影响半径证明架构真的改善。
+4. **行为与架构分开验证** —— 测试为"行为保持"提供证据；依赖方向、归属关系与影响半径为"架构改善"提供证据。
 
-Skill 会在相关任务出现时自动加载，并坚持"证据优先于模式合规"，内置明确的停止条件和常见重构反模式清单。
+在支持主动 Skill discovery 的宿主上，本 Skill 的 description 被设计为既能匹配明确的架构请求，也能匹配症状式请求；自动发现能力依赖宿主与模型，客户端暴露该 Skill 时，显式点名（"use the architecture-refactoring skill"）始终可用。它坚持"证据优先于模式合规"，内置明确的停止条件和常见重构反模式清单。
+
+## 使用后会发生什么变化？
+
+泛泛的"套用 Clean Architecture"提示往往会得到一个更漂亮的目录树：
+
+```text
+src/
+├── domain/
+├── services/
+├── repositories/
+├── interfaces/
+└── adapters/
+```
+
+本 Skill 要求的是能减少未来耦合的最小改动：
+
+1. 追踪哪些代码总是一起变化。
+2. 识别被割裂的状态归属。
+3. 给出具体的依赖证据。
+4. 提出最小的边界调整。
+5. 先迁移一个调用方。
+6. 分别复验行为与结构。
+
+目标不是更漂亮的目录树，而是更小的未来变更面。
 
 ## 目录结构
 
@@ -58,7 +82,7 @@ Skill 本质是一个带 `SKILL.md` 的文件夹；任何支持
 **Claude Code**（用户级）：
 
 ```bash
-git clone https://github.com/4iKZ/architecture-refactoring-skill \
+git clone https://github.com/4iKZ/architecture-refactoring \
   ~/.claude/skills/architecture-refactoring
 ```
 
@@ -68,14 +92,14 @@ Windows PowerShell 请克隆到 `$HOME\.claude\skills\architecture-refactoring`�
 **OpenCode**：
 
 ```bash
-git clone https://github.com/4iKZ/architecture-refactoring-skill \
+git clone https://github.com/4iKZ/architecture-refactoring \
   ~/.config/opencode/skills/architecture-refactoring
 ```
 
 **Codex 及其他跨客户端 Agent**：
 
 ```bash
-git clone https://github.com/4iKZ/architecture-refactoring-skill \
+git clone https://github.com/4iKZ/architecture-refactoring \
   ~/.agents/skills/architecture-refactoring
 ```
 
@@ -106,8 +130,7 @@ git clone https://github.com/4iKZ/architecture-refactoring-skill \
 分析范围限定在该模块及其直接依赖邻域，除非发现问题是系统性的。
 ```
 
-不需要说出"架构"二字，它也会被症状触发——"为什么所有东西都互相依赖"、
-"改一个 bug 弄坏三个测试"、"该从哪里开始清理"。
+不需要说出"架构"二字，description 也被设计为匹配这类症状——"为什么所有东西都互相依赖"、"改一个 bug 弄坏三个测试"、"该从哪里开始清理"。
 
 **不适用场景**：绿地新项目设计、机械改名、代码格式化、依赖升级、纯风格清理。
 这些应当作为独立的变更处理。
@@ -119,14 +142,18 @@ git clone https://github.com/4iKZ/architecture-refactoring-skill \
 
 ```bash
 # 触发评测（需要 claude CLI；先把 skill 安装进工作区）
-python evals/run_trigger_eval.py --workspace <workspace> --output results.json
+python evals/run_trigger_eval.py --workspace <workspace> --output results.json --runs 3
 
 # 运行某个场景
 python evals/run_scenario_eval.py --scenario 1 --workspace <ws> \
   --with-skill . --out <run-dir>
 
-# 规范合规自检
-python evals/validate_skill.py
+# 仓库自检（需要 PyYAML）
+python evals/validate_skill.py .
+
+# 官方 Agent Skills 参考校验器（可选）
+python -m pip install "git+https://github.com/agentskills/agentskills.git#subdirectory=skills-ref"
+skills-ref validate .
 ```
 
 技能的自动发现依赖宿主 Agent。如果你的 Agent 不会自动调用 skill，请显式点名：

@@ -8,8 +8,10 @@
 - [The CI ratchet pattern](#the-ci-ratchet-pattern)
 
 Use these tools to make the audit evidence-based and the new boundary durable.
-Pick the project's existing ecosystem first; do not add a second toolchain for
-a one-time refactor.
+These are examples, not required dependencies: prefer tooling already present in
+the repository, and do not add architecture tooling merely because it appears
+in this reference. Pick the project's existing ecosystem first; do not add a
+second toolchain for a one-time refactor.
 
 ## Finding dependencies and cycles
 

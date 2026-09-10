@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+- Fold the `description` frontmatter into a `>-` block scalar for readability.
+- Make the `skills-ref` spec check blocking and upgrade GitHub Actions to the
+  Node 24 majors (`actions/checkout@v6`, `actions/setup-python@v6`).
+
 ## [0.1.0] - 2026-09-10
 
 Initial public revision of the skill.

@@ -181,6 +181,9 @@ python -m pip install "git+https://github.com/agentskills/agentskills.git#subdir
 skills-ref validate "$PWD"
 ```
 
+Windows note: the reference validator reads files as UTF-8; if your default
+locale is not UTF-8, set `$env:PYTHONUTF8=1` before running it.
+
 Skill discovery is host-dependent. If your agent does not auto-invoke skills,
 name it explicitly: "use the architecture-refactoring skill". See
 [evals/README.md](evals/README.md) and [evals/RESULTS.md](evals/RESULTS.md)

@@ -156,6 +156,9 @@ python -m pip install "git+https://github.com/agentskills/agentskills.git#subdir
 skills-ref validate "$PWD"
 ```
 
+Windows 提示：参考校验器按 UTF-8 读取文件；若系统默认编码不是 UTF-8，请先设置
+`$env:PYTHONUTF8=1`。
+
 技能的自动发现依赖宿主 Agent。如果你的 Agent 不会自动调用 skill，请显式点名：
 "use the architecture-refactoring skill"。详见 [evals/README.md](evals/README.md)
 与 [evals/RESULTS.md](evals/RESULTS.md)。

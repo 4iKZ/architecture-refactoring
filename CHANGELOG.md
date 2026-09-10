@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- Add a when-to-use infographic to the README.
+
 ## [0.1.1] - 2026-09-10
 
 - Fold the `description` frontmatter into a `>-` block scalar for readability.

@@ -108,6 +108,10 @@ git clone https://github.com/4iKZ/architecture-refactoring \
 
 ## 使用方式
 
+<p align="center">
+  <img src="assets/when-to-use.jpg" alt="何时使用本 Skill——适用与不适用场景" width="100%">
+</p>
+
 先审计，不改代码：
 
 ```text

@@ -127,6 +127,10 @@ matches.
 
 ## Usage
 
+<p align="center">
+  <img src="assets/when-to-use.jpg" alt="When to use this skill — good fit vs not the right tool" width="100%">
+</p>
+
 Audit first, without editing code:
 
 ```text

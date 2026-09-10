@@ -9,6 +9,8 @@ evals/
 ├── evals.json              # 4 output scenarios (prompt + expected output + assertions)
 ├── trigger_queries.json    # 20 trigger queries (should/shouldn't trigger, train/validation split)
 ├── run_trigger_eval.py     # runs trigger queries via the `claude` CLI and reports trigger rates
+├── run_scenario_eval.py    # runs one output scenario and snapshots outputs/ + tests.txt
+├── grade_scenario.py       # deterministic checks + grading.json (hybrid grader)
 └── fixtures/
     ├── shop-cycle/               # orders<->billing cycle, duplicated pricing rule, stable ugly module
     └── inventory-shared-state/   # three writers for the same stock state
@@ -51,6 +53,29 @@ evals/workspace/iteration-N/<scenario-name>/{with_skill,without_skill}/
 
 Grade assertions with concrete evidence; for the "tests still pass" assertion, run the fixture test suite in `outputs/`.
 
+## Grading outputs
+
+Run the deterministic subset after a scenario finishes:
+
+```bash
+python evals/grade_scenario.py --run-dir <run-dir>
+```
+
+It writes `grading.json` in the run directory in the shape recommended by the
+Agent Skills evaluation guide (`assertion_results` + `summary`). Assertions
+that can be checked mechanically are graded automatically; the rest are
+recorded with `"passed": null` and `mode: "manual"` for transcript review.
+`pass_rate` covers only the auto-decided assertions.
+
+Current automatic checks:
+
+- Scenario 1 (`fix-import-cycle`): import cycle removed (module-level, and not
+  hidden behind function-level imports), single writer of order state, single
+  discount rule, fixture tests exit code from `tests.txt`.
+- Scenario 2 (`audit-only-no-edit`): workspace tree byte-identical to the
+  fixture (first assertion only).
+- Scenarios 3 and 4: all assertions are semantic and stay manual.
+
 ## Running trigger evals
 
 **Host caveat:** skill discovery is model-dependent. On some hosts (for example
@@ -71,3 +96,5 @@ python evals/run_trigger_eval.py \
 
 Use `--split validation` to evaluate only the queries that must stay out of description tuning.
 A should-trigger query passes at trigger rate >= 0.5; a should-not-trigger query passes below that.
+For any reported result, use `--runs 3` or more: single runs are noisy (see
+[RESULTS.md](RESULTS.md) for an example).

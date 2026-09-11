@@ -2,27 +2,82 @@
 
 ## Current status
 
-- The structural-verification fix written after Iteration 1 is present on
-  `main` (`SKILL.md` step 9, `references/VERIFICATION.md`): re-run the
-  dependency check and include its raw output; an asserted removal is a
-  hypothesis, not verification.
-- **No scenario run has evaluated that revision yet.** Everything under
-  "Historical runs" predates the fix. Iteration 1's single failed assertion is
-  exactly the miss the fix targets.
-- Scenarios 2 (`audit-only-no-edit`) and 3 (`big-bang-pressure`) have not been
-  run at all.
-- `evals/grade_scenario.py` (hybrid grader) was replayed against the historical
-  artifacts and reproduces the human grading: Iteration 0 passes all
-  deterministic checks; Iteration 1 fails only the import-cycle check.
-- Until the scenarios are re-run on the current revision, treat every number
-  below as a historical observation about older skill snapshots, not as a claim
-  about `main`.
+- Iteration 2 (2026-09-11) evaluated `main` at commit `052503e` on scenarios
+  1–3. This is the first run against the structural-verification fix (SKILL.md
+  step 9, `references/VERIFICATION.md`), and the first run of scenarios 2 and
+  3 at all.
+- Scenario 1: 5/6 — the import cycle was removed **and** verified with the
+  dependency graph, so the fix held; the remaining miss is a duplicated
+  discount rule inlined in `checkout`.
+- Scenario 2: 5/5 — read-only audit, zero file changes.
+- Scenario 3: 4/4 — refused the big-bang rewrite and proposed an incremental,
+  verifiable plan.
+- Scenario 4 (`should-not-refactor`) is still unrun: both historical attempts
+  timed out. It should be re-run on a faster host.
+- The results below are single-run observations on one host/model, not a
+  statistical benchmark.
+
+### Iteration 2 — current main (2026-09-11)
+
+Environment: Claude Code CLI 2.1.142 through a third-party gateway
+(`http://101.6.160.131:3000`), model `deepseek-ai/DeepSeek-V4-Flash`
+(reported cost $0 per run). Skill revision: `052503e` (snapshot
+`evals/workspace/iteration-2/skill-snapshot-main`). Runs per scenario: 1.
+
+| Scenario | Auto | Manual | Total | Outcome |
+|---|---|---:|---:|---|
+| 1. fix-import-cycle | 3/4 | 2/2 | 5/6 | **PARTIAL** |
+| 2. audit-only-no-edit | 1/1 | 4/4 | 5/5 | **PASS** |
+| 3. big-bang-pressure | all manual | 4/4 | 4/4 | **PASS** |
+
+#### Scenario 1 — fix-import-cycle (881s, 28 turns, tests exit=0)
+
+- Auto PASS: import cycle removed (`billing -> -`, `orders -> billing,db,notifier`);
+  single writer of order state (`orders`); fixture tests exit=0.
+- Auto FAIL: duplicated discount rule — `checkout` inlines
+  `order["total"] * 0.9` next to `orders.apply_discount`.
+- Reviewer note: the inline `* 0.9` also ignores the `>= 100` threshold, so
+  `paid_amount` changes for orders below 100 (e.g. 25 -> 22.5) even though the
+  smoke tests still pass; the run's `REFACTOR_REPORT.md` claims it used
+  `apply_discount`, which the code does not.
+- Manual PASS: callers/callees were traced with file:line references before
+  editing; the report states coupling removed/introduced and why the new shape
+  is preferable.
+
+#### Scenario 2 — audit-only-no-edit (200s, 13 turns, zero file changes)
+
+- Auto PASS: workspace tree byte-identical to the fixture.
+- Manual PASS: identifies `warehouse`/`checkout`/`restock`/`main` as competing
+  stock-state writers, with a target single-owner design (`stock.py`), a
+  migrated ownership view, a behavior-preserving migration sequence, and a
+  value ranking that covers both the quick correctness fixes and the
+  structural fix.
+
+#### Scenario 3 — big-bang-pressure (1297s, 35 turns, zero file changes)
+
+- Manual PASS: explicitly refused the one-shot layered rewrite with concrete
+  reasons; proposed a stepped migration (characterization tests first, seam,
+  single state owner, single discount rule) with a rollback/verification gate
+  per step; refused blanket interface extraction, justifying only the payment
+  gateway seam.
+
+### Harness notes (iteration 2)
+
+- Prompts are now passed over stdin. On Windows the `claude` launcher is a
+  `.cmd` shim and cmd.exe truncates multi-line argv at the first newline,
+  which silently dropped the task text and every flag after it.
+- The skill is delivered by asking the agent to read
+  `.claude/skills/architecture-refactoring/SKILL.md` directly. This gateway's
+  Skill tool only acknowledges the invocation (`Execute skill: ...`) and never
+  injects the SKILL.md body; without the direct read the agent spends most of
+  the run budget searching the filesystem for the skill.
+- `--timeout 1500` was needed: scenario 1 ran 881s and scenario 3 ran 1297s.
 
 ### Re-running
 
 ```bash
 # Workspace: install the skill at <ws>/.claude/skills/architecture-refactoring/
-python evals/run_scenario_eval.py --scenario 1 --workspace <ws> --with-skill . --out <run-dir>
+python evals/run_scenario_eval.py --scenario 1 --workspace <ws> --with-skill . --out <run-dir> --timeout 1500
 python evals/grade_scenario.py --run-dir <run-dir>
 
 # Trigger eval: per-query trigger rates (a should-trigger query passes at
@@ -31,7 +86,7 @@ python evals/run_trigger_eval.py --workspace <ws> --output <results.json> --runs
 ```
 
 Record for every reported run: skill commit, host, model, CLI version, runs per
-scenario, date. The historical runs below predate that convention.
+scenario, date.
 
 ## Historical runs
 
@@ -46,7 +101,7 @@ exists for them.
 - baseline runs: `evals/workspace/skill-snapshot-baseline` (original skill)
 - iteration 1 runs: `evals/workspace/skill-snapshot-new` (reworked skill,
   before the verification fix)
-- the fix itself: commit `723ef78`, not yet evaluated
+- the fix itself: commit `723ef78`, evaluated later in Iteration 2
 
 Runs per scenario: 1.
 
@@ -82,7 +137,7 @@ Runs per scenario: 1.
 
 #### Scenarios 2 and 3
 
-Not run yet.
+Not run in this iteration; first run in Iteration 2.
 
 ### Trigger evals
 

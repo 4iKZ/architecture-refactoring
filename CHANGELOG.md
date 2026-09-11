@@ -3,6 +3,11 @@
 ## [Unreleased]
 
 - Add a when-to-use infographic to the README.
+- Fix the scenario harness: send prompts over stdin and deliver the skill by a
+  direct `SKILL.md` read (the gateway's Skill tool never injected the body).
+- Record Iteration 2 output-scenario results for `main` in `evals/RESULTS.md`.
+- Document installation via the open `skills` CLI
+  (`npx skills add 4iKZ/architecture-refactoring`) in both READMEs.
 
 ## [0.1.1] - 2026-09-10
 

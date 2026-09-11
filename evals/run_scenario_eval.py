@@ -23,18 +23,25 @@ HERE = Path(__file__).resolve().parent
 def build_prompt(task_prompt, skill_name, with_skill):
     if not with_skill:
         return task_prompt
+    # The skill is delivered by reading its file: on some hosts (verified
+    # against this repo's gateway) the Skill tool only acknowledges the
+    # invocation and never injects the SKILL.md body, and the follow-up
+    # filesystem hunt wastes most of the run budget.
     return (
-        "First invoke the Skill tool for the skill named '%s' so its full "
-        "instructions are loaded, then follow that skill to complete the task.\n\n"
-        "Task: %s" % (skill_name, task_prompt)
+        "Before doing anything else, read the skill instructions at "
+        ".claude/skills/%s/SKILL.md (relative to the current directory) and "
+        "follow them for this task; read the reference files it points to "
+        "when needed.\n\nTask: %s" % (skill_name, task_prompt)
     )
 
 
 def run_claude(claude, workspace, prompt, timeout, max_turns, stream_path):
+    # The prompt is sent over stdin: on Windows the `claude` launcher is a
+    # .cmd shim, and cmd.exe truncates a multi-line argv at the first newline
+    # (which also swallowed the flags that followed the prompt).
     cmd = [
         claude,
         "-p",
-        prompt,
         "--output-format",
         "json",
         "--max-turns",
@@ -45,11 +52,12 @@ def run_claude(claude, workspace, prompt, timeout, max_turns, stream_path):
         proc = subprocess.Popen(
             cmd,
             cwd=workspace,
+            stdin=subprocess.PIPE,
             stdout=out_file,
             stderr=subprocess.STDOUT,
         )
         try:
-            proc.wait(timeout=timeout)
+            proc.communicate(input=prompt.encode("utf-8"), timeout=timeout)
             timed_out = False
         except subprocess.TimeoutExpired:
             if sys.platform == "win32":
@@ -59,7 +67,7 @@ def run_claude(claude, workspace, prompt, timeout, max_turns, stream_path):
                 )
             else:
                 proc.kill()
-            proc.wait()
+            proc.communicate()
             timed_out = True
     return {
         "timed_out": timed_out,

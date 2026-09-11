@@ -76,6 +76,19 @@ Current automatic checks:
   fixture (first assertion only).
 - Scenarios 3 and 4: all assertions are semantic and stay manual.
 
+## Harness notes
+
+- Prompts are sent over stdin. On Windows the `claude` launcher is a `.cmd`
+  shim, and cmd.exe truncates multi-line argv at the first newline, which
+  silently drops the task text and every flag after it.
+- With `--with-skill`, the prompt asks the agent to read
+  `.claude/skills/<name>/SKILL.md` directly instead of calling the Skill tool:
+  some gateways implement the Skill tool as a no-op acknowledgement that never
+  injects the SKILL.md body, and the agent then spends the run budget
+  searching for the skill.
+- Use `--timeout 1500` on slow hosts; scenario 3 took ~22 minutes in the
+  Iteration 2 runs (see [RESULTS.md](RESULTS.md)).
+
 ## Running trigger evals
 
 **Host caveat:** skill discovery is model-dependent. On some hosts (for example

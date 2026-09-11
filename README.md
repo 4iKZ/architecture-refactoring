@@ -97,6 +97,23 @@ architecture-refactoring/
 The skill is a folder with a `SKILL.md`; any agent that supports the
 [Agent Skills](https://agentskills.io) format can load it.
 
+**Any supported agent (recommended)** — the open [`skills` CLI](https://skills.sh)
+detects installed agents and copies the skill into each one's skills directory,
+globally or per-project:
+
+```bash
+npx skills add 4iKZ/architecture-refactoring
+```
+
+The CLI prompts for agents, scope, and install method. For a non-interactive
+global install:
+
+```bash
+npx skills add 4iKZ/architecture-refactoring -g -y
+```
+
+**Native clone installs:**
+
 **Claude Code** (user-level):
 
 ```bash

@@ -79,6 +79,21 @@ architecture-refactoring/
 Skill 本质是一个带 `SKILL.md` 的文件夹；任何支持
 [Agent Skills](https://agentskills.io) 格式的 Agent 都可以加载。
 
+**任意支持的 Agent（推荐）** —— 使用开放的 [`skills` CLI](https://skills.sh)，
+它会自动检测已安装的 Agent，将 Skill 复制到各自的 skills 目录（全局或项目级）：
+
+```bash
+npx skills add 4iKZ/architecture-refactoring
+```
+
+CLI 会依次询问目标 Agent、安装范围与安装方式。非交互式全局安装：
+
+```bash
+npx skills add 4iKZ/architecture-refactoring -g -y
+```
+
+**原生 clone 安装：**
+
 **Claude Code**（用户级）：
 
 ```bash
